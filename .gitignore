@@ -6,3 +6,5 @@ WSJ_data/Full_data/WSJ_combined_no_dup.csv
 WSJ_data/Full_data/WSJ_full.csv
 
 .ipynb_checkpoints/Project-checkpoint.ipynb
+
+*.pyc
