@@ -24,7 +24,6 @@ from scipy import stats
 import brewer2mpl
 import urlparse
 
-# LA Times Scraper is basically the same as Boston Globe -- generalized to PQ archive
 def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', query = 'romney OR obama', debug = False):
     '''
     Scrapes the PQ archive system to get a list of all URLs.
@@ -53,7 +52,6 @@ def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', qu
     options['type'] = 'current'
     options['start'] = (page-1)*10
     options['QryTxt'] = query
-    options['publications'] = 'ALL'
     
     # try to get url with specified parameters
     try:
@@ -145,9 +143,8 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         if dom('p'):
             
             # add the abstract text to the article dict
-            article['abstract'] = ''
             for p in dom('p'):
-                article['abstract'] += ' ' + plaintext(p.content)
+                article['abstract'] = plaintext(p.content)
         
             # go to each table row
             for td in dom('td'):
@@ -168,13 +165,10 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
             # append each article dict as a row to the full df, adding headline and source
             for headline in dom('.docTitle'):
                 article['headline'] = headline.content
-            if debug: print urlparse.parse_qs(urlparse.urlparse(url).query)
-            article['source'] = urlparse.parse_qs(urlparse.urlparse(url).query)['pub'][0]
+            article['source'] = source
             PQarchive_full = PQarchive_full.append(article, ignore_index = True)
         
     return PQarchive_full
 
-# Scraping the Chicago Tribune
-PA_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'timesshamrock', 'PA Newspapers', 
-                                             query = 'romney OR obama', debug = False)
-PA_df.to_csv("PA_romney_or_obama.csv", encoding = "UTF-8")
+full_WP_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'washingtonpost', 'Washington Post', debug = False)
+full_WP_df.to_csv("./WP_election_2012.csv", encoding = "UTF-8")

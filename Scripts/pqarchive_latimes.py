@@ -22,6 +22,7 @@ import random
 import math
 from scipy import stats
 import brewer2mpl
+import urlparse
 
 # LA Times Scraper is basically the same as Boston Globe -- generalized to PQ archive
 def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', query = 'romney OR obama', debug = False):
@@ -66,19 +67,10 @@ def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', qu
     dom = web.Element(html)
     
     url_list = []
-    wp_pattern_good = re.compile(u'FMT=ABS')
-    wp_pattern_bad = re.compile(u'washingtonpost_historical')
     
     # find each url
-    for a in dom('table a'):
-        # check if the a tag has a title, the title matches the Preview sring, and the href is not from the header faq section
-        if ('title' in a.attrs) and (a.attrs['title'] == 'Preview&nbsp;(Abstract/Citation)') and (a.attrs['href'] != 'faq.html#abs'):
-            # add url to url_list
-            url_list += [str(a.attrs['href'])]
-        elif (newspaper_tag == 'washingtonpost' and re.search(wp_pattern_good, a.attrs['href']) is not None 
-              and re.search(wp_pattern_bad, a.attrs['href']) is None):
-            if debug: print a.attrs['href']
-            url_list.append(str(a.attrs['href']))
+    for a in dom('.result_title a'):
+        url_list.append(str(a.attrs['href']))
 
     return url_list
 
@@ -111,7 +103,7 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         new_url_list = PQarchive_url_list(start_date, end_date, i, newspaper_tag, query, debug)
     
     # create DataFrame
-    PQarchive_full = pd.DataFrame(columns=['author','date','section','word_count','abstract','headline','source'])
+    PQarchive_full = pd.DataFrame(columns=['author','date','section','word_count','abstract','headline','source', 'subjects'])
     
     url_count = 0
     
@@ -142,9 +134,11 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         # don't scrape if no abstract
         if dom('p'):
             
+            article['abstract'] = ''
             # add the abstract text to the article dict
             for p in dom('p'):
-                article['abstract'] = plaintext(p.content)
+                if (p.content != '<a href="http://www.latimes.com/terms">Terms of Service</a> | <a href="http://www.latimes.com/privacypolicy">Privacy Policy</a> | Los Angeles Times, 202 West 1st Street, Los Angeles, California, 90012 | Copyright 2011'):
+                    article['abstract'] += ' ' + plaintext(p.content)
         
             # go to each table row
             for td in dom('td'):
@@ -158,6 +152,8 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
                     article['section'] = td.content
                 elif prev_content == 'Text Word Count:':
                     article['word_count'] = td.content
+                elif prev_content == 'Subjects:':
+                    article['subjects'] = plaintext(td.content)
                 
                 # update prev_content for the next loop
                 prev_content = td.content
@@ -165,16 +161,13 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
             # append each article dict as a row to the full df, adding headline and source
             for headline in dom('.docTitle'):
                 article['headline'] = headline.content
-            article['source'] = source
+            if debug: print urlparse.parse_qs(urlparse.urlparse(url).query)
+            article['source'] = urlparse.parse_qs(urlparse.urlparse(url).query)['pub'][0]
             PQarchive_full = PQarchive_full.append(article, ignore_index = True)
         
     return PQarchive_full
 
-# Scraping the Chicago Tribune
-full_Chicago_Tribune_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'chicagotribune', 'Chicago Tribune', 
+# Scraping USA Today
+full_LAtimes_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'latimes', 'LA Times', 
                                              query = 'romney OR obama', debug = False)
-full_Chicago_Tribune_df.to_csv("./Chicago_Tribune_Data/ChicagoTribune_romney_or_obama.csv", encoding = "UTF-8")
-
-full_Chicago_Tribune_df = pd.read_csv("./Chicago_Tribune_Data/ChicagoTribune_romney_or_obama.csv", encoding = "UTF-8")
-full_Chicago_Tribune_df = full_Chicago_Tribune_df.drop('Unnamed: 0', 1)
-full_Chicago_Tribune_df.head()
+full_LAtimes_df.to_csv("./LATimes_romney_or_obama.csv", encoding = "UTF-8")

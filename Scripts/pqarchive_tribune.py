@@ -22,7 +22,6 @@ import random
 import math
 from scipy import stats
 import brewer2mpl
-import urlparse
 
 # LA Times Scraper is basically the same as Boston Globe -- generalized to PQ archive
 def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', query = 'romney OR obama', debug = False):
@@ -53,7 +52,6 @@ def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', qu
     options['type'] = 'current'
     options['start'] = (page-1)*10
     options['QryTxt'] = query
-    options['publications'] = 'ALL'
     
     # try to get url with specified parameters
     try:
@@ -168,13 +166,20 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
             # append each article dict as a row to the full df, adding headline and source
             for headline in dom('.docTitle'):
                 article['headline'] = headline.content
-            if debug: print urlparse.parse_qs(urlparse.urlparse(url).query)
-            article['source'] = urlparse.parse_qs(urlparse.urlparse(url).query)['pub'][0]
+            article['source'] = source
             PQarchive_full = PQarchive_full.append(article, ignore_index = True)
         
     return PQarchive_full
 
 # Scraping the Chicago Tribune
-PA_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'timesshamrock', 'PA Newspapers', 
+full_Chicago_Tribune_df = PQarchive_scrape_archives('1-1-2011','11-30-2011', 'chicagotribune', 'Chicago Tribune', 
                                              query = 'romney OR obama', debug = False)
-PA_df.to_csv("PA_romney_or_obama.csv", encoding = "UTF-8")
+full_Chicago_Tribune_df.to_csv("./ChicagoTribune_romney_or_obama_untilnov2011.csv", encoding = "UTF-8")
+
+full_Chicago_Tribune_df = PQarchive_scrape_archives('11-30-2011','6-30-2012', 'chicagotribune', 'Chicago Tribune', 
+                                             query = 'romney OR obama', debug = False)
+full_Chicago_Tribune_df.to_csv("./ChicagoTribune_romney_or_obama_untiljune2012.csv", encoding = "UTF-8")
+
+full_Chicago_Tribune_df = PQarchive_scrape_archives('6-30-2012','11-7-2012', 'chicagotribune', 'Chicago Tribune', 
+                                             query = 'romney OR obama', debug = False)
+full_Chicago_Tribune_df.to_csv("./ChicagoTribune_romney_or_obama_untilnov2012.csv", encoding = "UTF-8")

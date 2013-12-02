@@ -72,7 +72,7 @@ def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', qu
     # find each url
     for a in dom('table a'):
         # check if the a tag has a title, the title matches the Preview sring, and the href is not from the header faq section
-        if ('title' in a.attrs) and (a.attrs['title'] == 'Preview&nbsp;(Abstract/Citation)') and (a.attrs['href'] != 'faq.html#abs'):
+        if ('title' in a.attrs) and (a.attrs['title'] == 'Preview&nbsp;(Abstract/Citation)' or a.attrs['title'] == 'Preview (Abstract/Citation)') and (a.attrs['href'] != 'faq.html#abs'):
             # add url to url_list
             url_list += [str(a.attrs['href'])]
         elif (newspaper_tag == 'washingtonpost' and re.search(wp_pattern_good, a.attrs['href']) is not None 
@@ -143,8 +143,9 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         if dom('p'):
             
             # add the abstract text to the article dict
+            article['abstract'] = ''
             for p in dom('p'):
-                article['abstract'] = plaintext(p.content)
+                article['abstract'] += ' ' + plaintext(p.content)
         
             # go to each table row
             for td in dom('td'):
@@ -173,8 +174,4 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
 # Scraping Newsday
 full_newsday_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'newsday', 'Newsday', 
                                              query = 'romney OR obama', debug = False)
-full_newsday_df.to_csv("./Newsday_Data/newsday_romney_or_obama.csv", encoding = "UTF-8")
-
-full_newsday_df = pd.read_csv("./Newsday_Data/newsday_romney_or_obama.csv", encoding = "UTF-8")
-full_newsday_df = full_newsday_df.drop('Unnamed: 0', 1)
-full_newsday_df.head()
+full_newsday_df.to_csv("./newsday_romney_or_obama.csv", encoding = "UTF-8")

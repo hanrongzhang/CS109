@@ -143,8 +143,9 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         if dom('p'):
             
             # add the abstract text to the article dict
+            article['abstract'] = ''
             for p in dom('p'):
-                article['abstract'] = plaintext(p.content)
+                article['abstract'] += ' ' + plaintext(p.content)
         
             # go to each table row
             for td in dom('td'):
@@ -173,8 +174,4 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
 # Scraping USA Today
 full_USAToday_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'USAToday', 'USA Today', 
                                              query = 'romney OR obama', debug = False)
-full_USAToday_df.to_csv("./USA_Today_Data/USAToday_romney_or_obama.csv", encoding = "UTF-8")
-
-full_USAToday_df = pd.read_csv("./USA_Today_Data/USAToday_romney_or_obama.csv", encoding = "UTF-8")
-full_USAToday_df = full_USAToday_df.drop('Unnamed: 0', 1)
-full_USAToday_df.head()
+full_USAToday_df.to_csv("./USAToday_romney_or_obama.csv", encoding = "UTF-8")
