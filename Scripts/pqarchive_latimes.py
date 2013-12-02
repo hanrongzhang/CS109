@@ -168,6 +168,14 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
     return PQarchive_full
 
 # Scraping USA Today
-full_LAtimes_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'latimes', 'LA Times', 
+full_LAtimes_df = PQarchive_scrape_archives('1-1-2011','11-30-2011', 'latimes', 'LA Times', 
                                              query = 'romney OR obama', debug = False)
-full_LAtimes_df.to_csv("./LATimes_romney_or_obama.csv", encoding = "UTF-8")
+full_LAtimes_df.to_csv("./LATimes_romney_or_obama_through_nov11.csv", encoding = "UTF-8")
+
+full_LAtimes_df = PQarchive_scrape_archives('11-30-2011','6-30-2012', 'latimes', 'LA Times', 
+                                             query = 'romney OR obama', debug = False)
+full_LAtimes_df.to_csv("./LATimes_romney_or_obama_throughjun12.csv", encoding = "UTF-8")
+
+full_LAtimes_df = PQarchive_scrape_archives('6-30-2012','11-7-2012', 'latimes', 'LA Times', 
+                                             query = 'romney OR obama', debug = False)
+full_LAtimes_df.to_csv("./LATimes_romney_or_obama_throughnov12.csv", encoding = "UTF-8")
