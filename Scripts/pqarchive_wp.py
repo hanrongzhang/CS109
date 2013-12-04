@@ -143,8 +143,11 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         if dom('p'):
             
             # add the abstract text to the article dict
+            article['abstract'] = ''
             for p in dom('p'):
-                article['abstract'] = plaintext(p.content)
+                # lots of <p> elements but the ones we are interested in do not have a defined class
+                if(p.attrs.get('class') is None):
+                    article['abstract'] += ' ' + plaintext(p.content)
         
             # go to each table row
             for td in dom('td'):
@@ -170,5 +173,12 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         
     return PQarchive_full
 
-full_WP_df = PQarchive_scrape_archives('1-1-2011','11-6-2012', 'washingtonpost', 'Washington Post', debug = False)
-full_WP_df.to_csv("./WP_election_2012.csv", encoding = "UTF-8")
+full_WP_df = PQarchive_scrape_archives('1-1-2011','4-30-2011', 'washingtonpost', 'Washington Post', debug = False)
+full_WP_df = full_WP_df.append(PQarchive_scrape_archives('4-30-2011','8-30-2011', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
+full_WP_df = full_WP_df.append(PQarchive_scrape_archives('8-30-2011','12-30-2011', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
+full_WP_df = full_WP_df.append(PQarchive_scrape_archives('12-30-2011','4-30-2012', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
+full_WP_df = full_WP_df.append(PQarchive_scrape_archives('4-30-2012','8-30-2012', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
+full_WP_df = full_WP_df.append(PQarchive_scrape_archives('8-30-2012','11-7-2012', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
+
+
+full_WP_df.to_csv("./WP_obama_romney_newest.csv", encoding = "UTF-8")

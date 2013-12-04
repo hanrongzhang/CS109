@@ -173,13 +173,12 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
 
 # Scraping the Chicago Tribune
 full_Chicago_Tribune_df = PQarchive_scrape_archives('1-1-2011','11-30-2011', 'chicagotribune', 'Chicago Tribune', 
-                                             query = 'romney OR obama', debug = False)
-full_Chicago_Tribune_df.to_csv("./ChicagoTribune_romney_or_obama_untilnov2011.csv", encoding = "UTF-8")
+                                             query = 'romney OR obama', debug = True)
 
-full_Chicago_Tribune_df = PQarchive_scrape_archives('11-30-2011','6-30-2012', 'chicagotribune', 'Chicago Tribune', 
-                                             query = 'romney OR obama', debug = False)
-full_Chicago_Tribune_df.to_csv("./ChicagoTribune_romney_or_obama_untiljune2012.csv", encoding = "UTF-8")
+full_Chicago_Tribune_df = full_Chicago_Tribune_df.append(PQarchive_scrape_archives('11-30-2011','6-30-2012', 'chicagotribune', 'Chicago Tribune', 
+                                             query = 'romney OR obama', debug = False), ignore_index = True)
 
-full_Chicago_Tribune_df = PQarchive_scrape_archives('6-30-2012','11-7-2012', 'chicagotribune', 'Chicago Tribune', 
-                                             query = 'romney OR obama', debug = False)
+full_Chicago_Tribune_df = full_Chicago_Tribune_df.append(PQarchive_scrape_archives('6-30-2012','11-7-2012', 'chicagotribune', 'Chicago Tribune', 
+                                             query = 'romney OR obama', debug = False), ignore_index = True)
+
 full_Chicago_Tribune_df.to_csv("./ChicagoTribune_romney_or_obama_untilnov2012.csv", encoding = "UTF-8")
