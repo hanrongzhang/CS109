@@ -99,16 +99,23 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
     
     # scrape first page of results
     new_url_list = PQarchive_url_list(start_date, end_date, i, newspaper_tag,  query, debug)
-    
+    prev_url_list = new_url_list
+
     # keep scraping until we run out of pages
-    while new_url_list:
+    while True:
     
+        # scrape next page
+        i += 1
+        new_url_list = PQarchive_url_list(start_date, end_date, i, newspaper_tag, query, debug)
+
+        if(new_url_list == prev_url_list):
+            break
+        else:
+            prev_url_list = new_url_list
+
         # add 10 new urls to url_list
         url_list += new_url_list
         
-        # Move to next page and scrape it
-        i += 1
-        new_url_list = PQarchive_url_list(start_date, end_date, i, newspaper_tag, query, debug)
     
     # create DataFrame
     PQarchive_full = pd.DataFrame(columns=['author','date','section','word_count','abstract','headline','source'])
@@ -173,12 +180,12 @@ def PQarchive_scrape_archives(start_date, end_date, newspaper_tag = 'latimes', s
         
     return PQarchive_full
 
+
 full_WP_df = PQarchive_scrape_archives('1-1-2011','4-30-2011', 'washingtonpost', 'Washington Post', debug = False)
 full_WP_df = full_WP_df.append(PQarchive_scrape_archives('4-30-2011','8-30-2011', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
 full_WP_df = full_WP_df.append(PQarchive_scrape_archives('8-30-2011','12-30-2011', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
 full_WP_df = full_WP_df.append(PQarchive_scrape_archives('12-30-2011','4-30-2012', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
 full_WP_df = full_WP_df.append(PQarchive_scrape_archives('4-30-2012','8-30-2012', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
 full_WP_df = full_WP_df.append(PQarchive_scrape_archives('8-30-2012','11-7-2012', 'washingtonpost', 'Washington Post', debug = False) , ignore_index = True)
-
 
 full_WP_df.to_csv("./WP_obama_romney_newest.csv", encoding = "UTF-8")
