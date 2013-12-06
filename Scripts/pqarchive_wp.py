@@ -51,7 +51,7 @@ def PQarchive_url_list(start_date, end_date, page, newspaper_tag = 'latimes', qu
     options['toyear'] = end_date[2]
     options['type'] = 'current'
     options['start'] = (page-1)*10
-    options['QryTxt'] = query
+    options['QryTxt'] = 'obama OR romney' #query
     
     # try to get url with specified parameters
     try:
