@@ -58,6 +58,10 @@ def nydn_date_convert(date):
 chicago_frame = pd.read_csv("./Chicago_Tribune_Data/ChicagoTribune_romney_or_obama_newer.csv", encoding = "UTF-8")
 chicago_frame['date'] = chicago_frame.date.apply(globe_date_convert)
 
+# Chcicago Tribune did not have "search for Obama or Romney" option, therefore this will be performed manually
+filter_pattern = "Obama|Romney"
+chicago_frame = chicago_frame[np.logical_or(chicago_frame['abstract'].str.contains(filter_pattern), chicago_frame['headline'].str.contains(filter_pattern))]
+
 #clean globe data
 globe_frame = pd.read_csv("./Globe_Data/Globe_romney_or_obama.csv", encoding = "UTF-8")
 globe_frame['date'] = globe_frame.date.apply(globe_date_convert)
@@ -81,8 +85,8 @@ newsday_frame['date'] = newsday_frame.date.apply(globe_date_convert)
 
 #clean nydn data
 nydn_frame = pd.read_csv("./NYDN_Data/NYDN_politics_2008_present.csv", encoding = "UTF-8")
-nydn_frame = nydn_frame.drop(['body', 'byline','url'],1)
-nydn_frame.rename(columns={'summary':'abstract','pub_date':'date'},inplace=True)
+nydn_frame = nydn_frame.drop(['body', 'url'],1)
+nydn_frame.rename(columns={'summary':'abstract','pub_date':'date', 'byline':'author'}, inplace=True)
 
 nydn_frame['date'] = nydn_frame.date.apply(nydn_date_convert)
 nydn_frame = nydn_frame[nydn_frame['source'] == 'New York Daily News']
@@ -90,18 +94,25 @@ nydn_frame = nydn_frame[nydn_frame['source'] == 'New York Daily News']
 nydn_frame = nydn_frame[nydn_frame['date'] > datetime.date(2012,1,1)]
 nydn_frame = nydn_frame[nydn_frame['date'] < datetime.date(2012,11,6)]
 
+# NYDN did not have "search for Obama or Romney" option, therefore this will be performed manually
+filter_pattern = "Obama|Romney|obama|romney"
+nydn_frame = nydn_frame[np.logical_or(nydn_frame['abstract'].str.contains(filter_pattern), nydn_frame['headline'].str.contains(filter_pattern))]
+
 #clean NYT data
-nyt_frame = pd.read_csv("./NYT_Data/election_2012_NYT.csv", encoding = "UTF-8")
+nyt_frame = pd.read_csv("./NYT_Data/NYT_2012_election_full.csv", encoding = "UTF-8")
 nyt_frame['date'] = nyt_frame.pub_date.apply(guardian_date_convert)
 
-#combine abstract and snippets
-temp_list = []
+#if no abstract, add snippet else add abstract
+abstract_list = []
 for row in nyt_frame.iterrows():
-    if pd.isnull(row[1][1]):
-       temp_list = temp_list + [row[1][11]]
+    if(pd.isnull(row[1][1]) or row[1][1] == ''):
+        abstract_list.append(row[1][11])
     else:
-        temp_list = temp_list + [row[1][1] + ' ' + row[1][11]]
-nyt_frame['abstract'] = temp_list
+        abstract_list.append(row[1][1])
+
+nyt_frame['abstract'] = abstract_list
+
+#nyt_frame.ix[nyt_frame.abstract.isnull(),"abstract"] = nyt_frame["snippet"]
 
 nyt_frame = nyt_frame.drop(['blog','pub_date','id', 'url','lead_paragraph','seo_headline','snippet'],1)
 nyt_frame.rename(columns={'news_desk':'section'},inplace=True)
@@ -117,6 +128,9 @@ wp_frame['date'] = wp_frame.date.apply(globe_date_convert)
 #clean USAToday
 usa_t_frame = pd.read_csv("./USA_Today_data/USAToday_romney_or_obama.csv", encoding = "UTF-8")
 usa_t_frame['date'] = usa_t_frame.date.apply(globe_date_convert)
+
+# if USA Today missed the abstract, delete that row
+usa_t_frame = usa_t_frame[~usa_t_frame['abstract'].str.contains("Search | Saved Search | Login | Tips | FAQ | Pricing | My Account | Help | About | Terms")]
 
 #clean wsj data
 wsj_frame = pd.read_csv("./WSJ_data/WSJ_obama_romney_newest.csv",encoding = "UTF-8")
@@ -136,8 +150,25 @@ total_frame = total_frame.append(wp_frame,ignore_index=True)
 total_frame = total_frame.append(newsday_frame,ignore_index=True)
 total_frame = total_frame.append(pa_frame,ignore_index=True)
 total_frame = total_frame.append(wsj_frame,ignore_index=True)
-total_frame = total_frame.drop(['Unnamed: 0','keywords','subjects'],1)
+
+# clean the entire dataframe
+total_frame = total_frame.drop(['Unnamed: 0', 'Unnamed: 0.1', 'keywords','subjects'],1)
 total_frame['id'] = list(xrange(len(total_frame.index)))
 total_frame['abstract'] = total_frame['abstract'].fillna('-')
-total_frame.to_csv("./all_data.csv", encoding = "UTF-8")
 
+# split into Romney and Obama Subframes
+def pres_filter(frame):
+    total_frame = frame
+    total_frame['candidate'] = ''
+    romney_mask = ((total_frame.headline.str.contains("Romney")) & (~total_frame.headline.str.contains('Obama'))) | ((total_frame.abstract.str.contains("Romney")) & (~total_frame.abstract.str.contains("Obama")) & (~total_frame.headline.str.contains('Obama')))
+    obama_mask = ((total_frame.headline.str.contains("Obama")) & (~total_frame.headline.str.contains('Romney'))) | ((total_frame.abstract.str.contains("Obama")) & (~total_frame.abstract.str.contains("Romney")) & (~total_frame.headline.str.contains('Romney')))
+    total_frame.ix[romney_mask, 'candidate'] = "Romney"
+    total_frame.ix[obama_mask, 'candidate'] = "Obama"
+    return total_frame
+
+total_frame = pres_filter(total_frame)
+obama_frame = total_frame[total_frame['candidate'] == 'Obama']
+romney_frame = total_frame[total_frame['candidate'] == 'Romney']
+total_frame.to_csv("./all_data.csv", encoding = "UTF-8")
+romney_frame.to_csv("./romney_data.csv", encoding = "UTF-8")
+obama_frame.to_csv("./obama_data.csv", encoding = "UTF-8")
