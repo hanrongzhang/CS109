@@ -10,3 +10,9 @@ WSJ_data/Full_data/WSJ_full.csv
 *.pyc
 
 *.pyc
+
+Data/WSJ_data/Full_data/WSJ_full_2.csv
+
+Data/WSJ_data/Full_data/WSJ_combined_no_dup.csv
+
+Data/WSJ_data/Full_data/WSJ_full.csv
