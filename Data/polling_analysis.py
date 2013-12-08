@@ -23,15 +23,7 @@ import random
 import math
 from scipy import stats
 
-def nydn_date_convert(date):
-    temp = date.split(' ')
-    date_result = datetime.datetime.strptime(temp[0], "%Y-%m-%d").date()
-    return date_result
-
-def polling_date_convert(date):
-    date_result = datetime.datetime.strptime(date, "%d/%m/%Y").date()
-    return date_result
-
+#gets rcp polling average, returns df indexed by date
 def get_poll(id): 
     url = "http://charts.realclearpolitics.com/charts/%i.xml" % int(id)
     xml = requests.get(url).text
@@ -68,16 +60,24 @@ def get_poll(id):
     return frame
 
 
+#runs analysis on a sentiment dataframe for a specified candidate
 def pos_analysis(csv, candidate):
     sent_frame = pd.read_csv(csv, encoding='UTF-8')
     sent_frame['net_pos'] = sent_frame['pos'] -.5
     
 
+    #creates stats based on the sentiment dataframe
     def aggregate(frame):
+
+        #groups input frame by date
         dg = frame.groupby('date')
+
+        #create stats
         pos_sums = dg.pos.sum()
         pos_means = dg.pos.mean()
         net_pos_sums = dg.net_pos.sum()
+
+        #add stats to a new result df
         result = pd.DataFrame(pos_sums)
         result.columns = ['pos_sum']
         result['pos_mean'] = pos_means
@@ -85,9 +85,13 @@ def pos_analysis(csv, candidate):
         return result
 
 
+    #run aggregate on target candidate part of sentiment dataframe
     result = aggregate(sent_frame[sent_frame['candidate'] == candidate])
+
+    #gets polls
     polls = get_poll(1171)
 
+    #merges polls and sentiment-stats
     temp = polls[candidate]
     result['polls']=temp[temp.notnull()]
     result = result[result.polls.notnull()]
@@ -95,9 +99,11 @@ def pos_analysis(csv, candidate):
     return result
 
 
+#run for obama and romney
 romney_frame = pos_analysis('./Data/all_data_sentiment.csv', 'Romney')
 obama_frame = pos_analysis('./Data/all_data_sentiment.csv', 'Obama')
 
+#write to csv
 romney_frame.to_csv("./Data/romney_analysis_v1.csv", encoding = "UTF-8")
 obama_frame.to_csv("./Data/obama_analysis_v1.csv", encoding = "UTF-8")
 
