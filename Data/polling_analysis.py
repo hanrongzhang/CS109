@@ -129,12 +129,9 @@ def pos_analysis(csv, candidate):
 
 
 #run for obama and romney
-obama_frame = pos_analysis('./Data/all_data_sentiment.csv', 'Obama')
-romney_frame = pos_analysis('./Data/all_data_sentiment.csv', 'Romney')
+obama_frame = pos_analysis('all_data_sentiment.csv', 'Obama')
+romney_frame = pos_analysis('all_data_sentiment.csv', 'Romney')
 
 #write to csv
-romney_frame.to_csv("./Data/romney_analysis_v1.csv", encoding = "UTF-8")
-obama_frame.to_csv("./Data/obama_analysis_v1.csv", encoding = "UTF-8")
-
-
-
+romney_frame.to_csv("romney_analysis_v1.csv", encoding = "UTF-8")
+obama_frame.to_csv("obama_analysis_v1.csv", encoding = "UTF-8")
