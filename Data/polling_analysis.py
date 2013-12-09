@@ -77,6 +77,7 @@ def pos_analysis(csv, candidate):
         pos_means = dg.pos.mean()
         net_pos_sums = dg.net_pos.sum()
 
+
         #add stats to a new result df
         result = pd.DataFrame(pos_sums)
         result.columns = ['pos_sum']
@@ -96,7 +97,24 @@ def pos_analysis(csv, candidate):
     result['polls']=temp[temp.notnull()]
     result = result[result.polls.notnull()]
 
+    # create running average column
+    running_average = []
+
+    for index,(i, item) in enumerate(result.iterrows()):
+        previous_scores = 0
+        avg_count = 0
+        run_avg = 0
+
+        for i in range(5):
+            if (index-i) >= 0:
+                previous_scores += result.iloc[index - i]['net_pos_sums']
+                avg_count += 1
+        run_avg = previous_scores / avg_count
+        running_average.append(run_avg)
+
+    result['running_pos_avg'] = running_average
     return result
+
 
 
 #run for obama and romney
