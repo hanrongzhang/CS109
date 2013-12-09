@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -7,14 +8,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import Normalizer
 from sklearn import metrics
 from sklearn.cluster import KMeans, MiniBatchKMeans
-from sklearn.decomposition import TruncatedSVD
-
 
 from optparse import OptionParser
 import sys
 
 import numpy as np
 from pandas import read_csv
+import pylab as pl
+from sklearn.decomposition import PCA
 
 # parse commandline arguments
 op = OptionParser()
@@ -43,21 +44,21 @@ if len(args) > 0:
     sys.exit(1)
 
 ###############################################################################
+# Set up data and vectorizer
 
-#load data (will already be done when scripts are combined)
-all_data = read_csv('./Data/all_data.csv')
+#load data
+all_data = read_csv('all_data.csv')
 #uncomment the following to only analyze articles about candidates
-#all_data = all_data[(all_data['candidate'] == 'Romney') | (all_data['candidate'] == 'Obama')]
+all_data = all_data[(all_data['candidate'] == 'Romney') | (all_data['candidate'] == 'Obama')]
 
 #turn list of sources into np array
-labels = np.array(all_data[['source']].to_dict('list').values()[0])
+labels = np.array(all_data[['sources']].to_dict('list').values()[0])
 #turn list of abstracts into a list
 abstracts = all_data[['abstract']].to_dict('list').values()[0]
 #source_num is number of unique sources
 source_num = np.unique(labels).shape[0]
 
-#print number of abstracts and sources
-print("%d abstracts" % len(abstracts))
+#print number of sources
 print("%d sources" % source_num)
 
 if opts.use_hashing:
@@ -124,5 +125,53 @@ print("Adjusted Rand-Index: %.3f" % metrics.adjusted_rand_score(labels, km.label
 #silhouette coefficient: a higher score relates to a model with better defined clusters
 print("Silhouette Coefficient: %0.3f" % metrics.silhouette_score(X, labels, sample_size=1000))
 
-#Code modified from http://scikit-learn.org/stable/auto_examples/document_clustering.html
+###############################################################################
+# Visualize the results on PCA-reduced data
+
+np.random.seed(42)
+sample_size = 300
+
+data = X.toarray()
+n_digits = source_num
+n_samples, n_features = data.shape
+
+reduced_data = PCA(n_components=2).fit_transform(data)
+kmeans = KMeans(init='k-means++', n_clusters=n_digits, n_init=10)
+kmeans.fit(reduced_data)
+
+# Step size of the mesh. Decrease to increase the quality of the VQ.
+h = .02     # point in the mesh [x_min, m_max]x[y_min, y_max].
+
+# Plot the decision boundary. For that, we will assign a color to each
+x_min, x_max = reduced_data[:, 0].min(), reduced_data[:, 0].max()
+y_min, y_max = reduced_data[:, 1].min(), reduced_data[:, 1].max()
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+# Obtain labels for each point in mesh. Use last trained model.
+Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
+
+# Put the result into a color plot
+Z = Z.reshape(xx.shape)
+pl.figure(1)
+pl.clf()
+pl.imshow(Z, interpolation='nearest',
+          extent=(xx.min(), xx.max(), yy.min(), yy.max()),
+          cmap=pl.cm.Paired,
+          aspect='auto', origin='lower')
+
+pl.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=2)
+# Plot the centroids as a white X
+centroids = kmeans.cluster_centers_
+pl.scatter(centroids[:, 0], centroids[:, 1],
+           marker='x', s=169, linewidths=3,
+           color='w', zorder=10)
+pl.title('K-means clustering on the abstracts dataset (PCA-reduced data)\n'
+         'Centroids are marked with white cross')
+pl.xlim(x_min, x_max)
+pl.ylim(y_min, y_max)
+pl.xticks(())
+pl.yticks(())
+pl.show()
+
+#Kmeans code modified from http://scikit-learn.org/stable/auto_examples/document_clustering.html
+#PCA code modified from http://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html
 #Statistical definitions from http://scikit-learn.org/stable/modules/clustering.html
