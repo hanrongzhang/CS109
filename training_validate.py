@@ -256,6 +256,6 @@ cv_pos = cross_validate(pos_X, pos_Y)
 # cv_sup = cross_validate(sup_X, sup_Y, alphas = [0, 0.001, 0.05, 0.1, .5, 1], min_dfs = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4])
 # cv_subj = cross_validate(subj_X, subj_Y, alphas = [0, 0.001, 0.05, 0.1, .5, 1], min_dfs = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4])
 
-# cv_pos.to_csv("./Data/cv_pos.csv", encoding = "UTF-8")
+cv_pos.to_csv("./Data/cross_validation_data/cv_pos.csv", encoding = "UTF-8")
 # cv_sup.to_csv("./Data/cv_sup_revised.csv", encoding = "UTF-8")
 # cv_subj.to_csv("./Data/cv_subj_revised.csv", encoding = "UTF-8")
