@@ -31,35 +31,35 @@ op.add_option("--no-idf",
 op.add_option("--use-hashing",
               action="store_true", default=False,
               help="Use a hashing feature vectorizer")
-op.add_option("--n-features", type=int, default=10000,
+op.add_option("--n-features", type=int, default=100000,
               help="Maximum number of features (dimensions)"
                    "to extract from text.")
 op.add_option("--verbose",
               action="store_true", dest="verbose", default=False,
               help="Print progress reports inside k-means algorithm.")
+op.add_option("--start_date",
+              dest="start_date", default='2011-01-01',
+              help="Print progress reports inside k-means algorithm.")
+op.add_option("--end_date",
+              dest="end_date", default='2012-12-31',
+              help="Print progress reports inside k-means algorithm.")
 
+			  
 (opts, args) = op.parse_args()
-if len(args) > 0:
-    op.error("this script takes no arguments.")
-    sys.exit(1)
 
 ###############################################################################
 # Set up data and vectorizer
 
 #load data
-all_data = read_csv('all_data.csv')
-#uncomment the following to only analyze articles about candidates
-all_data = all_data[(all_data['candidate'] == 'Romney') | (all_data['candidate'] == 'Obama')]
+data = read_csv('Data/all_data_classified_both.csv')
+data = data[(data['date'] >= opts.start_date) & (data['date'] <= opts.end_date)]
 
 #turn list of sources into np array
-labels = np.array(all_data[['sources']].to_dict('list').values()[0])
+labels = np.array(data[['source']].to_dict('list').values()[0])
 #turn list of abstracts into a list
-abstracts = all_data[['abstract']].to_dict('list').values()[0]
+abstracts = data[['abstract']].to_dict('list').values()[0]
 #source_num is number of unique sources
 source_num = np.unique(labels).shape[0]
-
-#print number of sources
-print("%d sources" % source_num)
 
 if opts.use_hashing:
     if opts.use_idf:
@@ -81,7 +81,7 @@ else:
                                  stop_words='english', use_idf=opts.use_idf)
 X = vectorizer.fit_transform(abstracts)
 
-print("n_samples: %d, n_features: %d" % X.shape)
+print("n_samples: %d, n_features: %d," % X.shape, "n_sources: %d" % source_num)
 print()
 
 if opts.n_components:
@@ -106,9 +106,7 @@ else:
     km = KMeans(n_clusters=source_num, init='k-means++', max_iter=100, n_init=1,
                 verbose=opts.verbose)
 
-print("Clustering sparse data with %s" % km)
 km.fit(X)
-print()
 
 #homogeneity: each cluster contains only members of a single class
 print("Homogeneity: %0.3f" % metrics.homogeneity_score(labels, km.labels_))
@@ -170,7 +168,7 @@ pl.xlim(x_min, x_max)
 pl.ylim(y_min, y_max)
 pl.xticks(())
 pl.yticks(())
-pl.show()
+pl.savefig('clustering.png')
 
 #Kmeans code modified from http://scikit-learn.org/stable/auto_examples/document_clustering.html
 #PCA code modified from http://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html
