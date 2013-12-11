@@ -224,11 +224,16 @@ def cross_validate(X, Y, vectorizers = [CountVectorizer, TfidfVectorizer], ngram
     
     results = []
     
+    iterations  = len(score_methods) * len(vectorizers) * len(ngrams) * len(min_dfs) * len(alphas)
+    print "This script will run for %i iterations" % iterations
+    iteration = 0
     for score_method in score_methods:
         for vectorizer_func in vectorizers:
             for ngram in ngrams:
                 for min_df in min_dfs:
                     for alpha_val in alphas:
+
+                        if(iteration % 10 == 0): print iteration
                         # declare vectorizer with desired parameters
                         vectorizer = vectorizer_func(min_df = min_df, ngram_range = ngram)       
                         X_vec = vectorize_data(X, vectorizer)
@@ -245,17 +250,25 @@ def cross_validate(X, Y, vectorizers = [CountVectorizer, TfidfVectorizer], ngram
                                         'ngram': ngram,
                                         'min_df': min_df,
                                         'alpha': alpha_val})
+
+                        iteration += 1
     
     return pd.DataFrame(results)
 
-pos_X, pos_Y = load_positivity()
+# pos_X, pos_Y = load_positivity()
 # sup_X, sup_Y = load_support()
 # subj_X, subj_Y = load_subjectivity()
 
-cv_pos = cross_validate(pos_X, pos_Y)
+manual_df = pd.read_csv("./Data/manual_classification.csv", encoding = "UTF-8")    
+manual_df = manual_df.drop("Unnamed: 0", 1)
+manual_X, manual_Y = manual_df.headline + ' ' + manual_df.abstract, manual_df.rating
+
+# cv_pos = cross_validate(pos_X, pos_Y)
 # cv_sup = cross_validate(sup_X, sup_Y, alphas = [0, 0.001, 0.05, 0.1, .5, 1], min_dfs = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4])
 # cv_subj = cross_validate(subj_X, subj_Y, alphas = [0, 0.001, 0.05, 0.1, .5, 1], min_dfs = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4])
+cv_manual = cross_validate(manual_X, manual_Y, alphas = np.arange(.1, 2.5, .2), min_dfs = np.arange(.0005, .045, .0004))
 
-cv_pos.to_csv("./Data/cross_validation_data/cv_pos.csv", encoding = "UTF-8")
-# cv_sup.to_csv("./Data/cv_sup_revised.csv", encoding = "UTF-8")
-# cv_subj.to_csv("./Data/cv_subj_revised.csv", encoding = "UTF-8")
+# cv_pos.to_csv("./Data/cross_validation_data/cross_validation_data/cv_pos.csv", encoding = "UTF-8")
+# cv_sup.to_csv("./Data/cross_validation_data/cv_sup_revised.csv", encoding = "UTF-8")
+# cv_subj.to_csv("./Data/cross_validation_data/cv_subj_revised.csv", encoding = "UTF-8")
+cv_manual.to_csv("./Data/cross_validation_data/cv_manual_revised.csv", encoding = "UTF-8")

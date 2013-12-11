@@ -34,15 +34,19 @@ op.add_option("--use-hashing",
 op.add_option("--n-features", type=int, default=100000,
               help="Maximum number of features (dimensions)"
                    "to extract from text.")
+op.add_option("--min_df",
+              dest="min_df", default=.0001)
 op.add_option("--verbose",
               action="store_true", dest="verbose", default=False,
               help="Print progress reports inside k-means algorithm.")
 op.add_option("--start_date",
-              dest="start_date", default='2011-01-01',
-              help="Print progress reports inside k-means algorithm.")
+              dest="start_date", default='2011-01-01')
 op.add_option("--end_date",
-              dest="end_date", default='2012-12-31',
-              help="Print progress reports inside k-means algorithm.")
+              dest="end_date", default='2012-12-31')
+op.add_option("--text_source",
+              dest="text_source", default='both')
+op.add_option("--print_visualization", action="store_false",
+              dest="print_visualization", default=True)
 
 			  
 (opts, args) = op.parse_args()
@@ -57,7 +61,13 @@ data = data[(data['date'] >= opts.start_date) & (data['date'] <= opts.end_date)]
 #turn list of sources into np array
 labels = np.array(data[['source']].to_dict('list').values()[0])
 #turn list of abstracts into a list
-abstracts = data[['abstract']].to_dict('list').values()[0]
+if (opts.text_source == 'headlines'):
+  text = data[['headline']].to_dict('list').values()[0]
+elif (opts.text_source == 'abstracts'):
+  text = data[['abstract']].to_dict('list').values()[0]
+else:
+  text = (data[['abstract']] + data[['headline']]).to_dict('list').values()[0]
+
 #source_num is number of unique sources
 source_num = np.unique(labels).shape[0]
 
@@ -78,8 +88,9 @@ if opts.use_hashing:
                                        binary=False)
 else:
     vectorizer = TfidfVectorizer(max_df=0.5, max_features=opts.n_features,
-                                 stop_words='english', use_idf=opts.use_idf)
-X = vectorizer.fit_transform(abstracts)
+                                 stop_words='english', use_idf=opts.use_idf, min_df = float(opts.min_df))
+
+X = vectorizer.fit_transform(text)
 
 print("n_samples: %d, n_features: %d," % X.shape, "n_sources: %d" % source_num)
 print()
@@ -126,49 +137,51 @@ print("Silhouette Coefficient: %0.3f" % metrics.silhouette_score(X, labels, samp
 ###############################################################################
 # Visualize the results on PCA-reduced data
 
-np.random.seed(42)
-sample_size = 300
+if(opts.print_visualization):
+    np.random.seed(42)
+    sample_size = 300
 
-data = X.toarray()
-n_digits = source_num
-n_samples, n_features = data.shape
+    data = X.toarray()
+    n_digits = source_num
+    n_samples, n_features = data.shape
 
-reduced_data = PCA(n_components=2).fit_transform(data)
-kmeans = KMeans(init='k-means++', n_clusters=n_digits, n_init=10)
-kmeans.fit(reduced_data)
+    reduced_data = PCA(n_components=2).fit_transform(data)
+    kmeans = KMeans(init='k-means++', n_clusters=n_digits, n_init=10)
+    kmeans.fit(reduced_data)
 
-# Step size of the mesh. Decrease to increase the quality of the VQ.
-h = .02     # point in the mesh [x_min, m_max]x[y_min, y_max].
+    # Step size of the mesh. Decrease to increase the quality of the VQ.
+    h = .02     # point in the mesh [x_min, m_max]x[y_min, y_max].
 
-# Plot the decision boundary. For that, we will assign a color to each
-x_min, x_max = reduced_data[:, 0].min(), reduced_data[:, 0].max()
-y_min, y_max = reduced_data[:, 1].min(), reduced_data[:, 1].max()
-xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
-# Obtain labels for each point in mesh. Use last trained model.
-Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
+    # Plot the decision boundary. For that, we will assign a color to each
+    x_min, x_max = reduced_data[:, 0].min(), reduced_data[:, 0].max()
+    y_min, y_max = reduced_data[:, 1].min(), reduced_data[:, 1].max()
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    # Obtain labels for each point in mesh. Use last trained model.
+    Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
 
-# Put the result into a color plot
-Z = Z.reshape(xx.shape)
-pl.figure(1)
-pl.clf()
-pl.imshow(Z, interpolation='nearest',
-          extent=(xx.min(), xx.max(), yy.min(), yy.max()),
-          cmap=pl.cm.Paired,
-          aspect='auto', origin='lower')
+    # Put the result into a color plot
+    Z = Z.reshape(xx.shape)
+    pl.figure(1)
+    pl.clf()
+    pl.imshow(Z, interpolation='nearest',
+              extent=(xx.min(), xx.max(), yy.min(), yy.max()),
+              cmap=pl.cm.Paired,
+              aspect='auto', origin='lower')
 
-pl.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=2)
-# Plot the centroids as a white X
-centroids = kmeans.cluster_centers_
-pl.scatter(centroids[:, 0], centroids[:, 1],
-           marker='x', s=169, linewidths=3,
-           color='w', zorder=10)
-pl.title('K-means clustering on the abstracts dataset (PCA-reduced data)\n'
-         'Centroids are marked with white cross')
-pl.xlim(x_min, x_max)
-pl.ylim(y_min, y_max)
-pl.xticks(())
-pl.yticks(())
-pl.savefig('clustering.png')
+    pl.plot(reduced_data[:, 0], reduced_data[:, 1], 'k.', markersize=2)
+    # Plot the centroids as a white X
+    centroids = kmeans.cluster_centers_
+    pl.scatter(centroids[:, 0], centroids[:, 1],
+               marker='x', s=169, linewidths=3,
+               color='w', zorder=10)
+
+    pl.title('K-means clustering on ' + opts.text_source + ' (PCA-reduced data)\n'
+             'Centroids are marked with white cross')
+    pl.xlim(x_min, x_max)
+    pl.ylim(y_min, y_max)
+    pl.xticks(())
+    pl.yticks(())
+    pl.savefig('clustering.png')
 
 #Kmeans code modified from http://scikit-learn.org/stable/auto_examples/document_clustering.html
 #PCA code modified from http://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html
