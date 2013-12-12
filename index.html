@@ -31,30 +31,41 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
-<a name="project-summary" class="anchor" href="#project-summary"><span class="octicon octicon-link"></span></a>Project Summary</h1>
+        <p><img src="https://raw.github.com/jmarks1992/CS109/master/newspapers.png"></p>
 
 <h3>
 <a name="background" class="anchor" href="#background"><span class="octicon octicon-link"></span></a>Background</h3>
 
-<p>Various interesting things about news and elections go here...</p>
+<p>After President Barack Obama was reelected on November 6, 2012, it took Fox News just one day to publish an article titled <a href="http://www.foxnews.com/opinion/2012/11/07/five-ways-mainstream-media-tipped-scales-in-favor-obama/">"Five ways the mainstream media tipped the scales in favor of Obama."</a> The left was just as blunt, such as Salon's article two months later, <a href="http://www.salon.com/2013/01/05/12_most_despicable_things_fox_news_did_in_2012/">"12 most despicable things Fox News did in 2012."</a></p>
+
+<p>Both sides in this debate are correct that a functioning democracy relies heavily on a fair and free press during elections, so it is important to use the data from 2012 to answer a few key questions: How does Presidential election coverage among major media outlets? Which ones print articles that are the most positive for one candidate or the other, or the most supportive, or the most subjective? Is there a distincitive style of writing associated with an individual newspaper?</p>
 
 <h3>
 <a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>Methods</h3>
 
-<p>Various interesting things about our methods go here...</p>
+<p>We gathered 2011-2012 article data from many major news sources. Specifically, we used APIs from the New York Times, USA Today, The Guardian, and Bing. We wrote web scrapers to gather data from the Wall Street Journal, the New York Daily News, Boston Globe, the Washington Post, and the Los Angeles Times. We then cleaned the data so that all of the articles from different sources could be standardized and combined into one dataframe containing over 30,000 rows.</p>
+
+<p>We wrote a script to determine which, if either, of the two candidates (Obama or Romney) the article related to. We also used both pre-written sentiment databases and manual sentiment training to determine the probability that each article is positive for the candidate it relates to, that it supports that candidate, and how subjective or objective it is.</p>
+
+<p>Next, we cross-validated our data to choose the optimum of 240 combinations, looping through different scoring methods, vectorizers, n-grams, min_dfs, and alphas. After intial cross validation, we redefined the parameter search space to more accurately encompass the peak scores and reperformed cross validation.</p>
+
+<p>Finally, we visualized our data set in a variety of ways to determine what insights we could find about 2012 election coverage. We graphed article counts by source, candidate, and date. We graphed the frequencies of word count, abstract length, and headline length. We graphed our sentiment analysis results by source, candidate, and date. We also used contour plots and clustering to examine how closely related articles from the same source are to each other.</p>
 
 <h3>
 <a name="results" class="anchor" href="#results"><span class="octicon octicon-link"></span></a>Results</h3>
 
-<p>Various results...</p>
+<p>Contrary to the hyperbolic claims of media bias following the 2012 election, we found a surprising lack of difference in the positivity and support of candidates across different newspapers and across time. While some metrics, most notably media subjectivity, did increase as the election came closer, there does not appear to be a consistent bias for or against either candidate within the news media as a whole. Similarly, there is not a significant relationship between polling results for each candidate and the media's portrayal of that candidate. This suggests the media did not, at least in a way noticable by our tests, tip the scales in favor of Barack Obama.</p>
 
 <h3>
 <a name="conculusions" class="anchor" href="#conculusions"><span class="octicon octicon-link"></span></a>Conculusions</h3>
 
-<p>Things we discovered are the most important things ever discovered...</p>
+<p>There are two ways to explain these findings. The more cynical one is that newspapers want to make coverage more exciting as the election approaches to sell more papers, so they become more subjective over time. A more realistic justification is that there is simply more election coverage as the big day approaches - the objectives coverage is still the same, so most of the additional coverage is filled with subjective pieces.</p>
 
-<h1>
+<p>In summary, the outpouring of media coverage concerning media bias and the effect that differential coverage had on the election's results seems to be overblown. While one can easily point at particularly devisive or slanted pieces, looking at newspaper coverage as a whole there does not seem to be a large difference between the media's coverage of Barack Obama or Mitt Romney.</p>
+
+<p>To see our complete project file, please <a href="http://nbviewer.ipython.org/github/jmarks1992/CS109/blob/master/Project.ipynb?create=1">go here</a>. A summary of our methods and findings is below.</p>
+
+<hr><h1>
 <a name="data-collection" class="anchor" href="#data-collection"><span class="octicon octicon-link"></span></a>Data Collection</h1>
 
 <h2>
@@ -82,51 +93,248 @@
 <h2>
 <a name="data-munging" class="anchor" href="#data-munging"><span class="octicon octicon-link"></span></a>Data Munging</h2>
 
-<p>After combining all the datasets of our scraped data, we filtered it to ensure that all articles are related to Romney and Obama based on string matching. We then split the corpus of articles into two groups: one directly related to Romney and the other directly related to Obama. To determine whether articles were directly related to the candidate, we wrote a function that iterated through each article, selecting ones in which that candidate was uniquely mentioned in the headline. If neither candidate was mentioned in the headline, the function searched for a candidate uniquely mentioned in the abstract.</p>
+<p>After combining all the datasets of our scraped data, we filtered it to ensure that all articles are related to Romney and Obama based on string matching. We then split the corpus of articles into two groups: one directly related to Romney and the other directly related to Obama. To do this, we used [Daniel's Algorithm].</p>
 
-<p>Following filtering and joining the dataset, we had a total of 35,274 articles. The relative article counts among different newspapers are as follows:</p>
+<p>Following filtering and joining the dataset, we have a total of 35,274 articles.</p>
 
-<img src="relative_count.png">
+<p>We then visualized our dataset in a few different ways:</p>
 
-<h1>
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/1.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/2.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/5.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/6.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/23.png"></p>
+
+<hr><h1>
 <a name="sentiment-analysis" class="anchor" href="#sentiment-analysis"><span class="octicon octicon-link"></span></a>Sentiment analysis</h1>
 
 <p>The data that we have collected so far does not have an intrinsic categorization built-in like the Rotten Tomatoes data from HW3. Instead, we will use three different precategorized datasets to evaluate each article on positivity, subjectivity, and support.</p>
 
-<p>The positivity dataset is a set of 50,000 IMDB movie reviews from Stanford (url) that are presplit into testing and training data. While our dataset is composed of news articles, not movies, we will be using ngrams of at most length 3 and the general trend of whether a phrase connotes a positive feeling about a topic or not should be approximately the same.</p>
+<p>The positivity dataset is a set of 50,000 IMDB movie reviews from Stanford (<a href="http://ai.stanford.edu/%7Eamaas/data/sentiment/">http://ai.stanford.edu/~amaas/data/sentiment/</a>) that are presplit into testing and training data. While our dataset is composed of news articles, not movies, we will be using ngrams of at most length 3 and the general trend of whether a phrase connotes a positive feeling about a topic or not should be approximately the same.</p>
 
-<p>The subjectivity dataset is composed of a set of 7419 IMDB movie summaries and Rotten Tomatoes reviews -- an IMDB summary is considered objective while Rotten Tomatoes data is considered subjective.</p>
+<p>The subjectivity dataset is composed of a set of 7419 IMDB movie summaries and Rotten Tomatoes reviews -- an IMDB summary is considered objective while Rotten Tomatoes data is considered subjective (<a href="http://www.cs.cornell.edu/people/pabo/movie-review-data">http://www.cs.cornell.edu/people/pabo/movie-review-data</a>).</p>
 
-<p>The support/oppose dataset comes from 10,000 political speeches that were precharacterized into support/oppose.</p>
-
-<p>... distributions etc. ...</p>
+<p>The support/oppose dataset comes from 10,000 political speeches that were precharacterized into support/oppose. This should provide us with a "politically slanted" sentiment analysis that can expose or check back against the possibility that movie reviews are qualititively different in structure than political articles (<a href="http://www.cs.cornell.edu/home/llee/data/convote.html">http://www.cs.cornell.edu/home/llee/data/convote.html</a>).</p>
 
 <h2>
 <a name="vectorization" class="anchor" href="#vectorization"><span class="octicon octicon-link"></span></a>Vectorization</h2>
 
-<p>Having loaded in the training data, we now vectorize the data and convert it into a form that we can use for classification. There are two different vectorizers that we can use: CountVectorizer, which simply converts the string 'Romney is running for election' into a bag of words with a count of each word in the string. Tf-idf term weighting, however, re-weights the counts based on the frequency of words: e.g. words like 'the' or 'is' will receive a much lower weighting in the final analysis because these terms occur too frequently to be informative.</p>
-
-<p>We will use sparse vectors throughout this analysis to save on memory space.</p>
+<p>Having loaded in the training data, we then vectorized the data and convert it into a form that we can use for classification. There are two different vectorizers that we can use: CountVectorizer, which simply converts the string 'Romney is running for election' into a bag of words with a count of each word in the string. Tf-idf term weighting, however, re-weights the counts based on the frequency of words: e.g. words like 'the' or 'is' will receive a much lower weighting in the final analysis because these terms occur too frequently to be informative.</p>
 
 <h2>
 <a name="naive-bayes-training" class="anchor" href="#naive-bayes-training"><span class="octicon octicon-link"></span></a>Naive Bayes Training</h2>
 
-<p>We now use the vectorized data to fit a multinomial Naive Bayes classfier. First, however, we split the three datasets into testing and training data. We then fit the classifier and report the classification scores to determine the degree of overfitting.</p>
+<p>We then used the vectorized data to fit a multinomial Naive Bayes classfier. First, however, we split the three datasets into testing and training data. We then fit the classifier and reported the classification scores to determine the degree of overfitting.</p>
 
-<p>In our preliminary analysis, we will use a CountVectorizer with unigrams. We will then look at more advanced options later.</p>
+<p>In our preliminary analysis, we used a CountVectorizer with unigrams (single words only), then proceeded to Tf-idf vectorization with bigrams (single words + sets of two words). To score each of the different options for fit, we used both a quantitative tool (fit accuracy scores) and a qualitative tool (a fit visualization -- best fits should have a 1:1 relationship between P(positive) and actual % positive).</p>
 
-<p>... comparison of different models, etc.</p>
+<p>One example of a poorly fit dataset is below:</p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/14.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/15.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/16.png"></p>
+
+<p>All three of these examples are poorly fit: we do not see a 1:1 relationship between the model and reality and the distributions of counts at a particular probability are basically unimodal.</p>
 
 <h2>
 <a name="cross-validation" class="anchor" href="#cross-validation"><span class="octicon octicon-link"></span></a>Cross Validation</h2>
 
-<p>To improve the fit of this classifier, we can use cross-validation to determine the best constants for fitting.</p>
+<p>To improve the fit of this classifier, we can use cross-validation to determine the best constants for fitting. Cross validation in this context means searching a parameter space to maximize a score that relates goodness of fit of a model. We performed cross-validation twice: once to obtain a rough idea of the maximum location, and a second time to find that peak more exactly. We compared Tdif vs. Counts, unigrams vs. bigrams, alpha values (0-50), and min_df values (1e-5 through 1e-1). To visualize this search, we made a visualization of a contour plot of fit scores based on alpha, min_df, Tdif/Counts, and unigrams/bigrams. We also report below the best fit parameters for the data.</p>
 
-<p>First, we will attempt to cross-validate by maximizing the testing set score. We will then attempt to maximize the log-liklihood and we will compare the results.</p>
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/17.png"></p>
 
-<p>In cross validation, for each dataset we will compare Tdif vs. Counts, unigrams vs. bigrams, alpha values (0-50), and min_df values (1e-5 through 1e-1).</p>
+<h3>
+<a name="positivity-post-cross-validation" class="anchor" href="#positivity-post-cross-validation"><span class="octicon octicon-link"></span></a>Positivity Post Cross Validation</h3>
 
-<p>... etc. etc. etc. ...</p>
+<table border="1">
+<thead><tr>
+<th></th>
+      <th>alpha</th>
+      <th>avg_score</th>
+      <th>min_df</th>
+      <th>ngram</th>
+      <th>scores</th>
+      <th>scoring_method</th>
+      <th>vectorizer</th>
+    </tr></thead>
+<tbody>
+<tr>
+<th>212</th>
+      <td> 0.05</td>
+      <td>    0.895300</td>
+      <td> 0.000001</td>
+      <td> (1, 2)</td>
+      <td> [0.895602087958, 0.897042059159, 0.893255730229]</td>
+      <td>  testing_score</td>
+      <td> TfidfVectorizer</td>
+    </tr>
+<tr>
+<th>110</th>
+      <td> 0.05</td>
+      <td>-4288.055188</td>
+      <td> 0.000050</td>
+      <td> (1, 2)</td>
+      <td> [-4330.25132721, -4234.31419617, -4299.60003994]</td>
+      <td> log_likelihood</td>
+      <td> TfidfVectorizer</td>
+    </tr>
+</tbody>
+</table><h3>
+<a name="support--oppose-post-cross-validation" class="anchor" href="#support--oppose-post-cross-validation"><span class="octicon octicon-link"></span></a>Support / Oppose Post Cross Validation</h3>
+
+<table border="1">
+<thead><tr>
+<th></th>
+      <th>alpha</th>
+      <th>avg_score</th>
+      <th>min_df</th>
+      <th>ngram</th>
+      <th>scores</th>
+      <th>scoring_method</th>
+      <th>vectorizer</th>
+    </tr></thead>
+<tbody>
+<tr>
+<th>236</th>
+      <td> 0.05</td>
+      <td>    0.753201</td>
+      <td> 0.0001</td>
+      <td> (1, 2)</td>
+      <td>   [0.76425394258, 0.74322684998, 0.752122927618]</td>
+      <td>  testing_score</td>
+      <td> TfidfVectorizer</td>
+    </tr>
+<tr>
+<th>117</th>
+      <td> 0.10</td>
+      <td>-1291.768700</td>
+      <td> 0.0001</td>
+      <td> (1, 2)</td>
+      <td> [-1278.80734317, -1298.52353558, -1297.97522042]</td>
+      <td> log_likelihood</td>
+      <td> TfidfVectorizer</td>
+    </tr>
+</tbody>
+</table><h3>
+<a name="subjectivity-post-cross-validation" class="anchor" href="#subjectivity-post-cross-validation"><span class="octicon octicon-link"></span></a>Subjectivity Post Cross Validation</h3>
+
+<table border="1">
+<thead><tr>
+<th></th>
+      <th>alpha</th>
+      <th>avg_score</th>
+      <th>min_df</th>
+      <th>ngram</th>
+      <th>scores</th>
+      <th>scoring_method</th>
+      <th>vectorizer</th>
+    </tr></thead>
+<tbody>
+<tr>
+<th>225</th>
+      <td> 0.10</td>
+      <td>   0.924800</td>
+      <td> 0.00001</td>
+      <td> (1, 2)</td>
+      <td> [0.925314937013, 0.927692769277, 0.921392139214]</td>
+      <td>  testing_score</td>
+      <td> TfidfVectorizer</td>
+    </tr>
+<tr>
+<th>104</th>
+      <td> 0.05</td>
+      <td>-707.571337</td>
+      <td> 0.00001</td>
+      <td> (1, 2)</td>
+      <td> [-689.981885375, -695.881432056, -736.850693017]</td>
+      <td> log_likelihood</td>
+      <td> TfidfVectorizer</td>
+    </tr>
+</tbody>
+</table><h3>
+<a name="results-post-cross-validation" class="anchor" href="#results-post-cross-validation"><span class="octicon octicon-link"></span></a>Results Post Cross Validation</h3>
+
+<p>Following cross validation, these classifiers have greatly improved: there is much less consistent bias and the models are typically neither under or overconfident. A fit plot of the three datasets with optimized parameters is below:</p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/18.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/19.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/20.png"></p>
+
+<h2>
+<a name="applying-training-data-to-entire-dataset" class="anchor" href="#applying-training-data-to-entire-dataset"><span class="octicon octicon-link"></span></a>Applying Training Data to Entire Dataset</h2>
+
+<p>Having found a model that predicts variance well in the training data, we now applied that model to the actual corpus of articles. The results were as follows:</p>
+
+<p>In table format:</p>
+
+<table border="1">
+<thead>
+<tr>
+<th></th>
+      <th>probability_positive</th>
+      <th>probability_support</th>
+      <th>probability_subjective</th>
+      <th>word_count</th>
+    </tr>
+<tr>
+<th>candidate</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+</thead>
+<tbody>
+<tr>
+<th>Obama</th>
+      <td> 0.606889</td>
+      <td> 0.401296</td>
+      <td> 0.174573</td>
+      <td> 742.270738</td>
+    </tr>
+<tr>
+<th>Romney</th>
+      <td> 0.638615</td>
+      <td> 0.403030</td>
+      <td> 0.191612</td>
+      <td> 864.380741</td>
+    </tr>
+</tbody>
+</table><p>Graphically, we see very little difference between the media positivity in its coverage of Romney and Obama: the average scores are practically the same across the board and the distribution of scores is very similar.</p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/21.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/22.png"></p>
+
+<hr><h1>
+<a name="untrained-clustering" class="anchor" href="#untrained-clustering"><span class="octicon octicon-link"></span></a>Untrained Clustering</h1>
+
+<p>Another way of determining how related articles are is through clustering. In this example, we clustered by source. We then printed five different metrics to determine how clustered the abstracts are, where the abstracts are transformed by a vectorizer into arrays. We also used PCA with two components in order to display the data as an image, which gave us a reasonably estimated visualization for how closely related the data is.</p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/24.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/25.png"></p>
+
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/26.png"></p>
+
+<p>In the first of the two clustering demonstrations above, we used a count vectorizer, which assigns a 0 or 1 to each word based on whether or not it appears in the abstract. In the second, we used IDF, which penalizes words based on how often they appear. The idea is that words like "a" or "the" should probably not be as influential as other words in determining appropriate cluster, but probably appear very often.</p>
+
+<p>Note that in each example, the homogeneity (on a scale of 0 to 1) is quite low, meaning each cluster contains articles form many other sources. The completeness (also on a scale of 0 to 1), on the other hand, is higher. This means we are closer to achieving the goal that all articles from the same source are located within the same cluster. The fact that their V-measure - the harmonic mean of the two variables - is so low indicates that overall clustering on either vectorizer fails to adequately separate the data by source.</p>
+
+<p>Based on experimentation with clustering on other subsets of the data, over different time frames, and on other variables besides the source, the general negative result is the same. This may be due to the fact that abstracts are relatively small amounts of text, so there may not be enough clues in any one abstract to distinguish which category it belongs in.</p>
+
+<hr><h1>
+<a name="media-favorability-scores-and-polling" class="anchor" href="#media-favorability-scores-and-polling"><span class="octicon octicon-link"></span></a>Media Favorability Scores and Polling</h1>
+
+<p>FROM DANIEL</p>
       </section>
     </div>
 
