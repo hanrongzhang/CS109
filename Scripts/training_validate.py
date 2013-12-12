@@ -46,7 +46,7 @@ def load_positivity():
     
     quotes, positivity = [], []
     
-    for path in ['./Data/Training_Data/positivity/train/', './Data/Training_Data/positivity/test/']:
+    for path in ['../Data/Training_Data/positivity/train/', './Data/Training_Data/positivity/test/']:
         # load all positive quotes
         for filename in os.listdir(path + 'pos/'):
             if(re.search(u'.txt', filename) is not None):
@@ -79,8 +79,8 @@ def load_support():
     
     quotes, support = [], []
     
-    for path in ['./Data/Training_Data/support_oppose/data_stage_one/training_set/', 
-                 './Data/Training_Data/support_oppose/data_stage_one/test_set/']:
+    for path in ['../Data/Training_Data/support_oppose/data_stage_one/training_set/', 
+                 '../Data/Training_Data/support_oppose/data_stage_one/test_set/']:
         # load all quotes
         for filename in os.listdir(path):
             if(re.search(u'.txt', filename) is not None):
@@ -109,7 +109,7 @@ def load_subjectivity():
     '''
     
     # load all subjective quotes
-    subj = open('./Data/Training_Data/subjectivity/subj')
+    subj = open('../Data/Training_Data/subjectivity/subj')
     subj_quotes, subjectivity = [], []
     
     for line in subj:
@@ -118,7 +118,7 @@ def load_subjectivity():
     subj.close()
     
     # load all objective quotes
-    obj = open('./Data/Training_Data/subjectivity/obj')
+    obj = open('../Data/Training_Data/subjectivity/obj')
     obj_quotes = []
     
     for line in obj:
@@ -235,7 +235,7 @@ def cross_validate(X, Y, vectorizers = [CountVectorizer, TfidfVectorizer], ngram
 
                         if(iteration % 10 == 0): print iteration
                         # declare vectorizer with desired parameters
-                        vectorizer = vectorizer_func(min_df = min_df, ngram_range = ngram)       
+                        vectorizer = vectorizer_func(min_df = min_df, ngram_range = ngram, stop_words = 'english')       
                         X_vec = vectorize_data(X, vectorizer)
                         
                         # declare the clf object and calculate the score
@@ -259,16 +259,16 @@ def cross_validate(X, Y, vectorizers = [CountVectorizer, TfidfVectorizer], ngram
 # sup_X, sup_Y = load_support()
 # subj_X, subj_Y = load_subjectivity()
 
-manual_df = pd.read_csv("./Data/manual_classification.csv", encoding = "UTF-8")    
-manual_df = manual_df.drop("Unnamed: 0", 1)
-manual_X, manual_Y = manual_df.headline + ' ' + manual_df.abstract, manual_df.rating
+# manual_df = pd.read_csv("./Data/manual_classification.csv", encoding = "UTF-8")    
+# manual_df = manual_df.drop("Unnamed: 0", 1)
+# manual_X, manual_Y = manual_df.headline + ' ' + manual_df.abstract, manual_df.rating
 
 # cv_pos = cross_validate(pos_X, pos_Y)
 # cv_sup = cross_validate(sup_X, sup_Y, alphas = [0, 0.001, 0.05, 0.1, .5, 1], min_dfs = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4])
 # cv_subj = cross_validate(subj_X, subj_Y, alphas = [0, 0.001, 0.05, 0.1, .5, 1], min_dfs = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4])
-cv_manual = cross_validate(manual_X, manual_Y, alphas = np.arange(.1, 2.5, .2), min_dfs = np.arange(.0005, .045, .0004))
+# cv_manual = cross_validate(manual_X, manual_Y, alphas = np.arange(.1, 2.5, .2), min_dfs = np.arange(.0005, .045, .0004))
 
 # cv_pos.to_csv("./Data/cross_validation_data/cross_validation_data/cv_pos.csv", encoding = "UTF-8")
 # cv_sup.to_csv("./Data/cross_validation_data/cv_sup_revised.csv", encoding = "UTF-8")
 # cv_subj.to_csv("./Data/cross_validation_data/cv_subj_revised.csv", encoding = "UTF-8")
-cv_manual.to_csv("./Data/cross_validation_data/cv_manual_revised.csv", encoding = "UTF-8")
+# cv_manual.to_csv("./Data/cross_validation_data/cv_manual_revised.csv", encoding = "UTF-8")

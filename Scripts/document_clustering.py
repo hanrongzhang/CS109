@@ -55,7 +55,7 @@ op.add_option("--print_visualization", action="store_false",
 # Set up data and vectorizer
 
 #load data
-data = read_csv('Data/all_data_classified_both.csv')
+data = read_csv('./Data/all_data_classified_both.csv')
 data = data[(data['date'] >= opts.start_date) & (data['date'] <= opts.end_date)]
 
 #turn list of sources into np array
