@@ -82,11 +82,11 @@
 <h2>
 <a name="data-munging" class="anchor" href="#data-munging"><span class="octicon octicon-link"></span></a>Data Munging</h2>
 
-<p>After combining all the datasets of our scraped data, we filtered it to ensure that all articles are related to Romney and Obama based on string matching. We then split the corpus of articles into two groups: one directly related to Romney and the other directly related to Obama. To do this, we used [Daniel's Algorithm].</p>
+<p>After combining all the datasets of our scraped data, we filtered it to ensure that all articles are related to Romney and Obama based on string matching. We then split the corpus of articles into two groups: one directly related to Romney and the other directly related to Obama. To determine whether articles were directly related to the candidate, we wrote a function that iterated through each article, selecting ones in which that candidate was uniquely mentioned in the headline. If neither candidate was mentioned in the headline, the function searched for a candidate uniquely mentioned in the abstract.</p>
 
-<p>Following filtering and joining the dataset, we have a total of 35,274 articles. The relative article counts among different newspapers are as follows:</p>
+<p>Following filtering and joining the dataset, we had a total of 35,274 articles. The relative article counts among different newspapers are as follows:</p>
 
-<p>... descriptive data of entire dataset ...</p>
+<img src="relative_count.png">
 
 <h1>
 <a name="sentiment-analysis" class="anchor" href="#sentiment-analysis"><span class="octicon octicon-link"></span></a>Sentiment analysis</h1>
