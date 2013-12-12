@@ -334,6 +334,8 @@
 <hr><h1>
 <a name="media-favorability-scores-and-polling" class="anchor" href="#media-favorability-scores-and-polling"><span class="octicon octicon-link"></span></a>Media Favorability Scores and Polling</h1>
 
+<p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/27.png"></p>
+
 <p>We created a time series of the RCP polling average and various methods of averaging our sentiment analysis measures. We tried multiple linear regressions as well as time series analysis. We ultimately concluded that normal linear regressions were ineffective at analyzing the correlation between polling and positivity measures because of the time-series nature of the data and lag effects. Time Series analysis proved more fruitful. We used Granger Causality between positivity measures and polling to try to find time-sensitive correlations. We found that changes in polling averages tend to precede corresponding changes in the running average of the positivity of print media coverage. All other relationships proved problematic or not statistically significant. We include the results of our final test below:</p>
 
 <p>Granger Causality</p>
