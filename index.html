@@ -334,7 +334,69 @@
 <hr><h1>
 <a name="media-favorability-scores-and-polling" class="anchor" href="#media-favorability-scores-and-polling"><span class="octicon octicon-link"></span></a>Media Favorability Scores and Polling</h1>
 
-<p>FROM DANIEL</p>
+<p>We created a time series of the RCP polling average and various methods of averaging our sentiment analysis measures. We tried multiple linear regressions as well as time series analysis. We ultimately concluded that normal linear regressions were ineffective at analyzing the correlation between polling and positivity measures because of the time-series nature of the data and lag effects. Time Series analysis proved more fruitful. We used Granger Causality between positivity measures and polling to try to find time-sensitive correlations. We found that changes in polling averages tend to precede corresponding changes in the running average of the positivity of print media coverage. All other relationships proved problematic or not statistically significant. We include the results of our final test below:</p>
+
+<p>Granger Causality</p>
+
+<p>number of lags (no zero) 1</p>
+
+<p>ssr based F test:         F=3.1450  , p=0.0767  , df_denom=542, df_num=1</p>
+
+<p>ssr based chi2 test:   chi2=3.1624  , p=0.0754  , df=1</p>
+
+<p>likelihood ratio test: chi2=3.1532  , p=0.0758  , df=1</p>
+
+<p>parameter F test:         F=3.1450  , p=0.0767  , df_denom=542, df_num=1</p>
+
+<p>Granger Causality</p>
+
+<p>number of lags (no zero) 2</p>
+
+<p>ssr based F test:         F=3.0803  , p=0.0468  , df_denom=539, df_num=2</p>
+
+<p>ssr based chi2 test:   chi2=6.2177  , p=0.0447  , df=2</p>
+
+<p>likelihood ratio test: chi2=6.1824  , p=0.0454  , df=2</p>
+
+<p>parameter F test:         F=3.0803  , p=0.0468  , df_denom=539, df_num=2</p>
+
+<p>Granger Causality</p>
+
+<p>number of lags (no zero) 3</p>
+
+<p>ssr based F test:         F=3.0438  , p=0.0285  , df_denom=536, df_num=3</p>
+
+<p>ssr based chi2 test:   chi2=9.2508  , p=0.0261  , df=3</p>
+
+<p>likelihood ratio test: chi2=9.1729  , p=0.0271  , df=3</p>
+
+<p>parameter F test:         F=3.0438  , p=0.0285  , df_denom=536, df_num=3</p>
+
+<p>Granger Causality</p>
+
+<p>number of lags (no zero) 4</p>
+
+<p>ssr based F test:         F=2.7181  , p=0.0291  , df_denom=533, df_num=4</p>
+
+<p>ssr based chi2 test:   chi2=11.0560 , p=0.0259  , df=4</p>
+
+<p>likelihood ratio test: chi2=10.9448 , p=0.0272  , df=4</p>
+
+<p>parameter F test:         F=2.7181  , p=0.0291  , df_denom=533, df_num=4</p>
+
+<p>Granger Causality</p>
+
+<p>number of lags (no zero) 5</p>
+
+<p>ssr based F test:         F=2.2286  , p=0.0502  , df_denom=530, df_num=5</p>
+
+<p>ssr based chi2 test:   chi2=11.3743 , p=0.0444  , df=5</p>
+
+<p>likelihood ratio test: chi2=11.2564 , p=0.0465  , df=5</p>
+
+<p>parameter F test:         F=2.2286  , p=0.0502  , df_denom=530, df_num=5</p>
+
+<p>One must be careful to avoid overstating our case however. While we can state these two variables have a granger causal relationship, that does not mean true causality. If there is a 3rd variable that is causing both spikes in positivity and spikes in polling average, with different lag times (polling reacting before positivity), then that would create the relationship we have without there being a true causal relationship. However, this at the least establishes a time lagged correlation, and "hints" at a possible causation.</p>
       </section>
     </div>
 
