@@ -31,7 +31,7 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p><img src="https://raw.github.com/jmarks1992/CS109/master/newspapers.png"></p>
+        <p><img src="https://raw.github.com/jmarks1992/CS109/master/Images/newspapers.png"></p>
 
 <h3>
 <a name="background" class="anchor" href="#background"><span class="octicon octicon-link"></span></a>Background</h3>
@@ -340,63 +340,72 @@
 
 <p>Granger Causality</p>
 
-<p>number of lags (no zero) 1</p>
+<pre><code>number of lags (no zero) 1
 
-<p>ssr based F test:         F=3.1450  , p=0.0767  , df_denom=542, df_num=1</p>
+ssr based F test:         F=3.1450  , p=0.0767  , df_denom=542, df_num=1
 
-<p>ssr based chi2 test:   chi2=3.1624  , p=0.0754  , df=1</p>
+ssr based chi2 test:   chi2=3.1624  , p=0.0754  , df=1
 
-<p>likelihood ratio test: chi2=3.1532  , p=0.0758  , df=1</p>
+likelihood ratio test: chi2=3.1532  , p=0.0758  , df=1
 
-<p>parameter F test:         F=3.1450  , p=0.0767  , df_denom=542, df_num=1</p>
+parameter F test:         F=3.1450  , p=0.0767  , df_denom=542, df_num=1
 
-<p>Granger Causality</p>
 
-<p>number of lags (no zero) 2</p>
 
-<p>ssr based F test:         F=3.0803  , p=0.0468  , df_denom=539, df_num=2</p>
+Granger Causality
 
-<p>ssr based chi2 test:   chi2=6.2177  , p=0.0447  , df=2</p>
+number of lags (no zero) 2
 
-<p>likelihood ratio test: chi2=6.1824  , p=0.0454  , df=2</p>
+ssr based F test:         F=3.0803  , p=0.0468  , df_denom=539, df_num=2
 
-<p>parameter F test:         F=3.0803  , p=0.0468  , df_denom=539, df_num=2</p>
+ssr based chi2 test:   chi2=6.2177  , p=0.0447  , df=2
 
-<p>Granger Causality</p>
+likelihood ratio test: chi2=6.1824  , p=0.0454  , df=2
 
-<p>number of lags (no zero) 3</p>
+parameter F test:         F=3.0803  , p=0.0468  , df_denom=539, df_num=2
 
-<p>ssr based F test:         F=3.0438  , p=0.0285  , df_denom=536, df_num=3</p>
 
-<p>ssr based chi2 test:   chi2=9.2508  , p=0.0261  , df=3</p>
 
-<p>likelihood ratio test: chi2=9.1729  , p=0.0271  , df=3</p>
+Granger Causality
 
-<p>parameter F test:         F=3.0438  , p=0.0285  , df_denom=536, df_num=3</p>
+number of lags (no zero) 3
 
-<p>Granger Causality</p>
+ssr based F test:         F=3.0438  , p=0.0285  , df_denom=536, df_num=3
 
-<p>number of lags (no zero) 4</p>
+ssr based chi2 test:   chi2=9.2508  , p=0.0261  , df=3
 
-<p>ssr based F test:         F=2.7181  , p=0.0291  , df_denom=533, df_num=4</p>
+likelihood ratio test: chi2=9.1729  , p=0.0271  , df=3
 
-<p>ssr based chi2 test:   chi2=11.0560 , p=0.0259  , df=4</p>
+parameter F test:         F=3.0438  , p=0.0285  , df_denom=536, df_num=3
 
-<p>likelihood ratio test: chi2=10.9448 , p=0.0272  , df=4</p>
 
-<p>parameter F test:         F=2.7181  , p=0.0291  , df_denom=533, df_num=4</p>
 
-<p>Granger Causality</p>
+Granger Causality
 
-<p>number of lags (no zero) 5</p>
+number of lags (no zero) 4
 
-<p>ssr based F test:         F=2.2286  , p=0.0502  , df_denom=530, df_num=5</p>
+ssr based F test:         F=2.7181  , p=0.0291  , df_denom=533, df_num=4
 
-<p>ssr based chi2 test:   chi2=11.3743 , p=0.0444  , df=5</p>
+ssr based chi2 test:   chi2=11.0560 , p=0.0259  , df=4
 
-<p>likelihood ratio test: chi2=11.2564 , p=0.0465  , df=5</p>
+likelihood ratio test: chi2=10.9448 , p=0.0272  , df=4
 
-<p>parameter F test:         F=2.2286  , p=0.0502  , df_denom=530, df_num=5</p>
+parameter F test:         F=2.7181  , p=0.0291  , df_denom=533, df_num=4
+
+
+
+Granger Causality
+
+number of lags (no zero) 5
+
+ssr based F test:         F=2.2286  , p=0.0502  , df_denom=530, df_num=5
+
+ssr based chi2 test:   chi2=11.3743 , p=0.0444  , df=5
+
+likelihood ratio test: chi2=11.2564 , p=0.0465  , df=5
+
+parameter F test:         F=2.2286  , p=0.0502  , df_denom=530, df_num=5
+</code></pre>
 
 <p>One must be careful to avoid overstating our case however. While we can state these two variables have a granger causal relationship, that does not mean true causality. If there is a 3rd variable that is causing both spikes in positivity and spikes in polling average, with different lag times (polling reacting before positivity), then that would create the relationship we have without there being a true causal relationship. However, this at the least establishes a time lagged correlation, and "hints" at a possible causation.</p>
       </section>
